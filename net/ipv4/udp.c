@@ -115,11 +115,10 @@
 #include "udp_impl.h"
 #include <net/sock_reuseport.h>
 #include <net/addrconf.h>
-#ifdef CONFIG_KNOX_NCM
-// SEC_PRODUCT_FEATURE_KNOX_SUPPORT_NPA {
+/* START_OF_KNOX_NPA */
 #include <net/ncm.h>
-// SEC_PRODUCT_FEATURE_KNOX_SUPPORT_NPA }
-#endif
+/* END_OF_KNOX_NPA */
+#include <net/udp_tunnel.h>
 
 struct udp_table udp_table __read_mostly;
 EXPORT_SYMBOL(udp_table);
@@ -2237,21 +2236,19 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 	if (sk) {
 		struct dst_entry *dst = skb_dst(skb);
 		int ret;
-#ifdef CONFIG_KNOX_NCM
-		// SEC_PRODUCT_FEATURE_KNOX_SUPPORT_NPA {
+		
+		/* START_OF_KNOX_NPA */
 		struct nf_conn *ct = NULL;
 		enum ip_conntrack_info ctinfo;
 		struct nf_conntrack_tuple *tuple = NULL;
 		char srcaddr[INET6_ADDRSTRLEN_NAP];
 		char dstaddr[INET6_ADDRSTRLEN_NAP];
-		// SEC_PRODUCT_FEATURE_KNOX_SUPPORT_NPA }
-#endif
+		// KNOX NPA - END
 
 		if (unlikely(sk->sk_rx_dst != dst))
 			udp_sk_rx_dst_set(sk, dst);
-
-#ifdef CONFIG_KNOX_NCM
-		// SEC_PRODUCT_FEATURE_KNOX_SUPPORT_NPA {
+		
+		/* START_OF_KNOX_NPA */
 		/* function to handle open flows with incoming udp packets */
 		if (check_ncm_flag()) {
 			if ( (skb) && (sk) && (sk->sk_protocol == IPPROTO_UDP) ) {
@@ -2297,8 +2294,8 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 				}
 			}
 		}
-		// SEC_PRODUCT_FEATURE_KNOX_SUPPORT_NPA }
-#endif
+		/* END_OF_KNOX_NPA */
+
 		ret = udp_unicast_rcv_skb(sk, skb, uh);
 		sock_put(sk);
 		return ret;
@@ -2310,17 +2307,37 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 
 	sk = __udp4_lib_lookup_skb(skb, uh->source, uh->dest, udptable);
 	if (sk) {
-#ifdef CONFIG_KNOX_NCM
-		// SEC_PRODUCT_FEATURE_KNOX_SUPPORT_NPA {
+		int ret;
+
+		if (inet_get_convert_csum(sk) && uh->check && !IS_UDPLITE(sk))
+			skb_checksum_try_convert(skb, IPPROTO_UDP, uh->check,
+						 inet_compute_pseudo);
+
+		ret = udp_queue_rcv_skb(sk, skb);
+
+		/* a return value > 0 means to resubmit the input, but
+		 * it wants the return to be -protocol, or 0
+		 */
+		if (ret > 0)
+			return -ret;
+		return 0;
+	}
+	if (sk) {
+		int ret;
+		
+		/* START_OF_KNOX_NPA */
 		struct nf_conn *ct = NULL;
 		enum ip_conntrack_info ctinfo;
 		struct nf_conntrack_tuple *tuple = NULL;
 		char srcaddr[INET6_ADDRSTRLEN_NAP];
 		char dstaddr[INET6_ADDRSTRLEN_NAP];
-		// SEC_PRODUCT_FEATURE_KNOX_SUPPORT_NPA }
-#endif
-#ifdef CONFIG_KNOX_NCM
-		// SEC_PRODUCT_FEATURE_KNOX_SUPPORT_NPA {
+		// KNOX NPA - END
+
+		if (inet_get_convert_csum(sk) && uh->check && !IS_UDPLITE(sk))
+			skb_checksum_try_convert(skb, IPPROTO_UDP, uh->check,
+						 inet_compute_pseudo);
+
+		/* START_OF_KNOX_NPA */
 		/* function to handle open flows with incoming udp packets */
 		if (check_ncm_flag()) {
 			if ( (skb) && (sk) && (sk->sk_protocol == IPPROTO_UDP) ) {
@@ -2366,8 +2383,14 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 				}
 			}
 		}
-		// SEC_PRODUCT_FEATURE_KNOX_SUPPORT_NPA }
-#endif
+		/* END_OF_KNOX_NPA */
+		
+		if (inet_get_convert_csum(sk) && uh->check && !IS_UDPLITE(sk))
+			skb_checksum_try_convert(skb, IPPROTO_UDP, uh->check,
+						 inet_compute_pseudo);
+
+		ret = udp_queue_rcv_skb(sk, skb);
+
 		/* a return value > 0 means to resubmit the input, but
 		 * it wants the return to be -protocol, or 0
 		 */
