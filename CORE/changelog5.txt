@@ -1,0 +1,21 @@
+#KAKAROT #kernel #A11-12 #kernel #V1.1
+<b>Kakarot-Kernel for Galaxy A52</b>
+Maintainer: @Neel0210
+
+<b>Changelog</b>
+<code>• Enabled ZRAM
+• Added FingerPrint Boot driver
+• Added Blu_Schedutil Governor
+• Implemented Dynamic FSync 2.0
+• Improved swapiness
+• Added KernelSpace battery saver
+</code>
+
+<b>Note</b>
+• As you already unlocked your BL
+• Flash everything at your own-risk
+
+<b>Support group</b>
+• @prishsupport
+• @prishupdates
+• @kakarotkernels
