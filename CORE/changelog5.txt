@@ -3,7 +3,8 @@
 Maintainer: @Neel0210
 
 <b>Changelog</b>
-<code>• Enabled ZRAM
+<code>• ONEUI 4 Supported
+• Enabled ZRAM
 • Added FingerPrint Boot driver
 • Added Blu_Schedutil Governor
 • Implemented Dynamic FSync 2.0

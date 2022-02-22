@@ -3,7 +3,8 @@
 Maintainer: @Neel0210
 
 <b>Changelog</b>
-<code>• Enabled ZRAM
+<code>• ONEUI 4 supported
+• Enabled ZRAM
 • Added FingerPrint Boot driver
 • Added Blu_Schedutil Governor
 • Implemented Dynamic FSync 2.0
@@ -18,4 +19,4 @@ Maintainer: @Neel0210
 <b>Support group</b>
 • @prishsupport
 • @prishupdates
-• @kakarotkernels
+• @Kakarot_Kernels
