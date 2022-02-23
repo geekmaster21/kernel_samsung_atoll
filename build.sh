@@ -89,7 +89,7 @@ else
     curl -F text="Samsung A52: Kernel is not compiled, come and check @neel0210" "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&parse_mode=Markdown"
 fi
 echo "======================="
-echo "Building Clean for A52"
+echo "Building Clean for A72"
 echo "======================="
 make $A72 O=A72 CC=clang
 make -j$(nproc --all) O=A72 CC=clang
